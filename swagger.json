@@ -115,6 +115,67 @@
           }
         }
       }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Autenticação"],
+        "description": "Realiza login do usuário",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login realizado com sucesso"
+          },
+          "401": {
+            "description": "Credenciais inválidas"
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["Autenticação"],
+        "description": "Atualiza o token de acesso do usuário",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "refreshToken": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token de acesso atualizado com sucesso"
+          },
+          "401": {
+            "description": "Refresh token inválido"
+          }
+        }
+      }
     }
   },
   "definitions": {
