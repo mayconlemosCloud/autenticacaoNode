@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
+import { UserService } from "../services/UserService";
 import { User } from "../models/User";
 
-let users: User[] = [];
-
-export const getUsers = (req: Request, res: Response) => {
+export const getUsers = async (req: Request, res: Response) => {
+  const users = await UserService.getAllUsers();
   res.json(users);
 };
 
-export const getUserById = (req: Request, res: Response) => {
+export const getUserById = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
-  const user = users.find((user) => user.id === id);
+  const user = await UserService.getUserById(id);
   if (user) {
     res.json(user);
   } else {
@@ -17,31 +17,33 @@ export const getUserById = (req: Request, res: Response) => {
   }
 };
 
-export const createUser = (req: Request, res: Response) => {
+export const createUser = async (req: Request, res: Response) => {
   const newUser: User = req.body;
-  newUser.id = users.length + 1;
-  users.push(newUser);
-  res.status(201).json(newUser);
+  const isVerifyEmailExist = await UserService.VerifyEmailExist(newUser);
+  if (isVerifyEmailExist) {
+    res.status(409).json("Email já cadastrado");
+  } else {
+    const user = await UserService.createUser(newUser);
+    res.status(201).json(user);
+  }
 };
 
-export const updateUser = (req: Request, res: Response) => {
+export const updateUser = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
-  const index = users.findIndex((user) => user.id === id);
-  if (index !== -1) {
-    const updatedUser: User = req.body;
-    updatedUser.id = id;
-    users[index] = updatedUser;
-    res.json(updatedUser);
+  const updatedUser: User = req.body;
+  updatedUser.id = id;
+  const user = await UserService.updateUser(updatedUser);
+  if (user) {
+    res.json(user);
   } else {
     res.status(404).json({ error: "Usuário não encontrado" });
   }
 };
 
-export const deleteUser = (req: Request, res: Response) => {
+export const deleteUser = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
-  const index = users.findIndex((user) => user.id === id);
-  if (index !== -1) {
-    users.splice(index, 1);
+  const deleted = await UserService.deleteUser(id);
+  if (deleted) {
     res.json({ message: "Usuário removido com sucesso" });
   } else {
     res.status(404).json({ error: "Usuário não encontrado" });
