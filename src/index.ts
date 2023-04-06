@@ -3,8 +3,11 @@ import morgan from "morgan";
 import router from "./routes";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "../swagger.json";
+import cors from "cors";
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 app.use(morgan("tiny"));

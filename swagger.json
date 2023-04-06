@@ -5,6 +5,13 @@
     "version": "1.0.0",
     "description": "API para gerenciamento de usuários"
   },
+  "securityDefinitions": {
+    "TokenHeader": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
   "basePath": "/",
   "paths": {
     "/users": {
@@ -173,6 +180,25 @@
           },
           "401": {
             "description": "Refresh token inválido"
+          }
+        }
+      }
+    },
+    "/auth/validate": {
+      "post": {
+        "tags": ["Autenticação"],
+        "description": "Valida o token de acesso do usuário",
+        "security": [
+          {
+            "TokenHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token de acesso válido"
+          },
+          "401": {
+            "description": "Token de acesso inválido"
           }
         }
       }

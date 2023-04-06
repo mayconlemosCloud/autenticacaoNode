@@ -12,5 +12,6 @@ router.delete("/users/:id", UserController.deleteUser);
 
 router.post("/auth/login", AuthController.login);
 router.post("/auth/refresh", AuthController.refresh);
+router.post("/auth/validate", AuthController.validateAccessToken);
 
 export default router;

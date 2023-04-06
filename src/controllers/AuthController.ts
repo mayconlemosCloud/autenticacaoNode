@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { UserService } from "../services/UserService";
@@ -8,8 +8,14 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "../utils/auth";
+import { User } from "../models/User";
+
+interface AuthRequest extends Request {
+  user?: User;
+}
 
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -44,5 +50,21 @@ export const refresh = (req: Request, res: Response) => {
         res.json({ accessToken });
       }
     });
+  }
+};
+
+export const validateAccessToken = (req: AuthRequest, res: Response) => {
+  const accessToken = req.headers.authorization;
+
+  if (!accessToken) {
+    return res.status(401).json({ error: "Token de acesso não encontrado" });
+  }
+
+  try {
+    const decoded = jwt.verify(accessToken, JWT_SECRET);
+    req.user = decoded;
+    return res.status(200).json({ message: "Token de acesso válido" });
+  } catch (error) {
+    return res.status(401).json({ error: "Token de acesso inválido" });
   }
 };
